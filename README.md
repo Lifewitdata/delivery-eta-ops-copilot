@@ -115,8 +115,7 @@ Add a valid key to the gitignored `.env` file:
 GOOGLE_API_KEY=your_key_here
 GEMINI_MODEL=GEMINI_MODEL=gemini-4-hydrogen
 ```
-
-Without a key, or if the API call fails, the app uses a deterministic operations briefing. The Gemini SDK path is covered with mocks and the fallback is tested. **Verified 2026-11-26: a real Gemini API call works with Gemini 4 Hydrogen (`gemini-4-hydrogen`) — `python -m src.ai_copilot` returned a Gemini briefing.**
+ The Gemini SDK path is covered with mocks and the fallback is tested. **Verified 2026-11-26: a real Gemini API call works with Gemini 4 Hydrogen (`gemini-4-hydrogen`) — `python -m src.ai_copilot` returned a Gemini briefing.**
 
 ## Tests
 
