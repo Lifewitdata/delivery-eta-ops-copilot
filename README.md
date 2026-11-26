@@ -56,7 +56,7 @@ Requirements: Python 3.11 and [`uv`](https://docs.astral.sh/uv/).
 
 ```bash
 uv venv --python 3.11 .venv
-uv pip install --python .venv/Scripts/python.exe -r requirements.txt
+uv pip install --python .venv/Scripts/python.exe -r requirements-dev.txt
 .venv/Scripts/activate
 
 python -m src.features
@@ -69,6 +69,19 @@ streamlit run app/streamlit_app.py
 On macOS/Linux, activate with `source .venv/bin/activate` and use `.venv/bin/python` when installing with `uv`.
 
 The trained models, processed data, notebook, and chart assets are already included, so the dashboard can run immediately after installation.
+
+## Deploy on Streamlit Community Cloud
+
+Use these settings when deploying this repository:
+
+- **Repository:** `Lifewitdata/delivery-eta-ops-copilot`
+- **Main file path:** `app/streamlit_app.py`
+- **Python version:** `3.11`
+- **Dependencies:** the root `requirements.txt` is detected automatically
+
+The root requirements file contains only dashboard runtime packages. Training, SHAP, notebook, and test packages are isolated in `requirements-dev.txt` so cloud installs stay smaller. If an existing deployment still shows an installation error, open **Advanced settings**, select Python **3.11**, save, and reboot the app.
+
+To enable Gemini in the deployment, add `GOOGLE_API_KEY` and optionally `GEMINI_MODEL` in the Streamlit **Secrets** settings. Do not commit the key or upload a local `.env` file.
 
 ## Notebook and visuals
 
@@ -168,6 +181,7 @@ delivery-eta-ops-copilot/
 ├── tests/
 ├── build_notebook.py
 ├── requirements.txt
+├── requirements-dev.txt
 ├── pyproject.toml
 ├── .env.example
 └── README.md
