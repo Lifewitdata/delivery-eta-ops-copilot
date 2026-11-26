@@ -1,0 +1,28 @@
+column,source,meaning
+order_id,base,Unique order ID from Zomato base
+courier_id,base,Courier / delivery person ID
+courier_age,base,Courier age in years (1019 missing in base)
+courier_rating,base,Courier rating 1-5 (1055 missing in base)
+order_date,base,Order date YYYY-MM-DD (Feb 11-Apr 6 2022)
+time_ordered,base,Time order placed HH:MM (835 missing)
+time_picked,base,Time order picked up HH:MM
+store_lat,adapted,Store latitude re-placed in Saudi city
+store_lng,adapted,Store longitude re-placed in Saudi city
+drop_lat,adapted,Drop latitude re-placed in Saudi city
+drop_lng,adapted,Drop longitude re-placed in Saudi city
+saudi_city,adapted,Riyadh/Jeddah/Dammam/Mecca/Medina by seeded hash
+city_type,base,Metropolitan/Urban/Semi-Urban from base
+zone,adapted,Zone = saudi_city for this project
+order_category,adapted,Food 62%/Grocery 18%/Pharmacy 8%/Parcel 7%/Errand 5% seeded assumption
+type_of_order,base,Snack/Meal/Drinks/Buffet
+vehicle_type,base,motorcycle/scooter/electric_scooter
+vehicle_condition,base,0 best / 1 / 2
+multiple_deliveries,base,Extra deliveries on this trip 0-3
+weather,base,Sunny/Cloudy/Fog/Stormy/Windy/Sandstorms
+traffic,base,Low/Medium/High/Jam
+festival,base,Yes/No
+delivery_time_min,base,Target: total delivery time in minutes
+distance_km_original,base,Haversine distance in base data (km)
+prep_wait_min,derived,Time picked minus time ordered in minutes median 10
+sla_min,assumption,SLA 30 minutes (project assumption)
+sla_miss,derived,1 if delivery_time_min > 30 else 0

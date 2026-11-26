@@ -1,0 +1,231 @@
+{
+  "model": "lightgbm",
+  "metrics": {
+    "model": "LightGBM",
+    "mae_min": 3.1,
+    "rmse_min": 3.86,
+    "r2": 0.833,
+    "actual_sla_miss_rate": 0.3127,
+    "predicted_sla_miss_rate": 0.3064,
+    "sla_accuracy": 0.9345,
+    "missed_late_count": 496,
+    "false_alarm_count": 408,
+    "mean_error_min": -0.1
+  },
+  "baseline": {
+    "model": "Naive overall median",
+    "mae_min": 7.6,
+    "rmse_min": 9.47,
+    "r2": -0.005,
+    "actual_sla_miss_rate": 0.3127,
+    "predicted_sla_miss_rate": 0.0,
+    "sla_accuracy": 0.6873,
+    "missed_late_count": 4319,
+    "false_alarm_count": 0,
+    "mean_error_min": 0.68
+  },
+  "sample_size": 2000,
+  "top_shap_drivers": [
+    {
+      "feature": "courier_age",
+      "mean_abs_shap_min": 2.467
+    },
+    {
+      "feature": "traffic_Low",
+      "mean_abs_shap_min": 2.271
+    },
+    {
+      "feature": "courier_rating",
+      "mean_abs_shap_min": 2.005
+    },
+    {
+      "feature": "vehicle_condition",
+      "mean_abs_shap_min": 1.978
+    },
+    {
+      "feature": "distance_km",
+      "mean_abs_shap_min": 1.471
+    },
+    {
+      "feature": "weather_Sunny",
+      "mean_abs_shap_min": 1.03
+    },
+    {
+      "feature": "distance_km_original",
+      "mean_abs_shap_min": 0.779
+    },
+    {
+      "feature": "traffic_Jam",
+      "mean_abs_shap_min": 0.745
+    },
+    {
+      "feature": "multiple_deliveries",
+      "mean_abs_shap_min": 0.722
+    },
+    {
+      "feature": "weather_Cloudy",
+      "mean_abs_shap_min": 0.664
+    }
+  ],
+  "zone_summary": [
+    {
+      "zone": "Dammam",
+      "orders": 2015,
+      "avg_actual_eta": 26.47,
+      "mae_min": 3.07,
+      "sla_miss_rate": 0.3087,
+      "missed_lates": 69
+    },
+    {
+      "zone": "Jeddah",
+      "orders": 3518,
+      "avg_actual_eta": 26.7,
+      "mae_min": 3.13,
+      "sla_miss_rate": 0.3161,
+      "missed_lates": 137
+    },
+    {
+      "zone": "Mecca",
+      "orders": 1363,
+      "avg_actual_eta": 26.63,
+      "mae_min": 3.14,
+      "sla_miss_rate": 0.3037,
+      "missed_lates": 50
+    },
+    {
+      "zone": "Medina",
+      "orders": 1317,
+      "avg_actual_eta": 27.17,
+      "mae_min": 2.91,
+      "sla_miss_rate": 0.3227,
+      "missed_lates": 37
+    },
+    {
+      "zone": "Riyadh",
+      "orders": 5598,
+      "avg_actual_eta": 26.65,
+      "mae_min": 3.13,
+      "sla_miss_rate": 0.3119,
+      "missed_lates": 203
+    }
+  ],
+  "hour_band_summary": [
+    {
+      "hour_band": "late_night",
+      "orders": 51,
+      "avg_actual_eta": 25.41,
+      "mae_min": 3.82,
+      "sla_miss_rate": 0.2353,
+      "top_shap_drivers": [
+        {
+          "feature": "traffic_Low",
+          "mean_abs_shap_min": 2.623
+        },
+        {
+          "feature": "vehicle_condition",
+          "mean_abs_shap_min": 1.867
+        },
+        {
+          "feature": "distance_km",
+          "mean_abs_shap_min": 1.47
+        },
+        {
+          "feature": "courier_rating",
+          "mean_abs_shap_min": 1.307
+        },
+        {
+          "feature": "courier_age",
+          "mean_abs_shap_min": 1.268
+        }
+      ]
+    },
+    {
+      "hour_band": "morning",
+      "orders": 337,
+      "avg_actual_eta": 22.01,
+      "mae_min": 2.58,
+      "sla_miss_rate": 0.1187,
+      "top_shap_drivers": [
+        {
+          "feature": "traffic_Low",
+          "mean_abs_shap_min": 3.036
+        },
+        {
+          "feature": "courier_age",
+          "mean_abs_shap_min": 2.465
+        },
+        {
+          "feature": "courier_rating",
+          "mean_abs_shap_min": 1.793
+        },
+        {
+          "feature": "vehicle_condition",
+          "mean_abs_shap_min": 1.777
+        },
+        {
+          "feature": "distance_km",
+          "mean_abs_shap_min": 1.213
+        }
+      ]
+    },
+    {
+      "hour_band": "afternoon",
+      "orders": 364,
+      "avg_actual_eta": 26.81,
+      "mae_min": 3.24,
+      "sla_miss_rate": 0.3324,
+      "top_shap_drivers": [
+        {
+          "feature": "courier_age",
+          "mean_abs_shap_min": 2.454
+        },
+        {
+          "feature": "vehicle_condition",
+          "mean_abs_shap_min": 2.018
+        },
+        {
+          "feature": "courier_rating",
+          "mean_abs_shap_min": 2.008
+        },
+        {
+          "feature": "traffic_Low",
+          "mean_abs_shap_min": 1.701
+        },
+        {
+          "feature": "distance_km",
+          "mean_abs_shap_min": 1.565
+        }
+      ]
+    },
+    {
+      "hour_band": "evening",
+      "orders": 1248,
+      "avg_actual_eta": 28.08,
+      "mae_min": 3.12,
+      "sla_miss_rate": 0.379,
+      "top_shap_drivers": [
+        {
+          "feature": "courier_age",
+          "mean_abs_shap_min": 2.519
+        },
+        {
+          "feature": "traffic_Low",
+          "mean_abs_shap_min": 2.216
+        },
+        {
+          "feature": "courier_rating",
+          "mean_abs_shap_min": 2.089
+        },
+        {
+          "feature": "vehicle_condition",
+          "mean_abs_shap_min": 2.024
+        },
+        {
+          "feature": "distance_km",
+          "mean_abs_shap_min": 1.513
+        }
+      ]
+    }
+  ],
+  "late_night_sla_miss_rate": 0.214
+}
