@@ -20,6 +20,8 @@ At the assumed 30-minute SLA, LightGBM misses **496** late orders and raises **4
 
 ## Dashboard
 
+**Live app:** [Open the Delivery ETA & AI Operations Copilot](https://delivery-eta-ops-copilot-sa6u2wekjrni7bl97n68ga.streamlit.app/)
+
 ![Streamlit dashboard showing LightGBM metrics](docs/images/app_dashboard.png)
 
 Run it locally:
