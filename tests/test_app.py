@@ -19,7 +19,7 @@ def test_streamlit_app_runs_without_lightgbm(monkeypatch) -> None:
     app = AppTest.from_file(str(ROOT / "app" / "streamlit_app.py"), default_timeout=30)
     app.run()
     assert not app.exception
-    assert app.title[0].value == "Delivery ETA Predictor & AI Operations Copilot"
+    assert app.title[0].value == "ML Delivery ETA Predictor & AI Operations Copilot"
     labels = [metric.label for metric in app.metric]
     assert "LightGBM MAE (min)" in labels
     assert "Predicted Delivery ETA" in labels
