@@ -1,25 +1,17 @@
 """Interactive Streamlit dashboard for LightGBM ETA prediction and ops briefs."""
 
 import json
-import sys
 from pathlib import Path
 
 import pandas as pd
 import streamlit as st
 
-# Locate the project root (the folder that contains both src/ and models/),
-# whether this file sits in the root or in a subfolder such as app/.
-HERE = Path(__file__).resolve().parent
-ROOT = next(
-    (p for p in [HERE, *HERE.parents] if (p / "src").is_dir() and (p / "models").is_dir()),
-    HERE,
-)
-if str(ROOT) not in sys.path:
-    sys.path.insert(0, str(ROOT))
-MODELS_DIR = ROOT / "models"
+from src.ai_copilot import generate_ops_brief
+from src.portable_model import PortableLightGBM
 
-from src.ai_copilot import generate_ops_brief  # noqa: E402
-from src.portable_model import PortableLightGBM  # noqa: E402
+
+ROOT = Path(__file__).resolve().parents[1]
+MODELS_DIR = ROOT / "models"
 
 
 @st.cache_resource
@@ -37,30 +29,24 @@ def set_category(row: dict, metrics: dict, category: str, value: str) -> None:
             row[col] = int(col == f"{category}_{value}")
 
 
+
 def default_level(metrics: dict, category: str) -> str:
-    """Level whose one-hot column is 1 in metrics["defaults"]."""
+    """Level whose one-hot column is 1 in metrics["defaults"].
+
+    The old code used category_levels[category][0] for every hidden
+    category, so the simulator always ran as Errand / Buffet /
+    electric_scooter, even though the trained defaults are
+    Food / Snack / motorcycle. That silently biased every prediction.
+    """
     for level in metrics["category_levels"][category]:
         if metrics["defaults"].get(f"{category}_{level}", 0) == 1:
             return level
     return metrics["category_levels"][category][0]
 
 
-def show_table(df: pd.DataFrame) -> None:
-    """Full-width dataframe that works on old and new Streamlit versions."""
-    try:
-        st.dataframe(df, width="stretch")
-    except TypeError:
-        st.dataframe(df, use_container_width=True)
-
-
 st.set_page_config(page_title="ML Delivery ETA Predictor & AI Operations Copilot", layout="wide")
 st.title("ML Delivery ETA Predictor & AI Operations Copilot")
-
-try:
-    metrics, summary, model = load_artifacts()
-except FileNotFoundError as e:
-    st.error(f"Missing model file: {e.filename}. Expected files in: {MODELS_DIR}")
-    st.stop()
+metrics, summary, model = load_artifacts()
 
 tab1, tab2, tab3 = st.tabs(["Live ETA Simulator", "Model & SHAP Insights", "AI Ops Copilot"])
 
@@ -69,9 +55,8 @@ with tab1:
     c1, c2, c3 = st.columns(3)
     distance = c1.slider("Distance (km)", 0.5, 25.0, 8.0, 0.5)
     hour = c2.slider("Hour of day", 0, 23, 18)
-    days = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
-    weekday_label = c3.selectbox("Day", days, index=4)
-    weekday = days.index(weekday_label)
+    weekday_label = c3.selectbox("Day", ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"], index=4)
+    weekday = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"].index(weekday_label)
 
     c4, c5, c6 = st.columns(3)
     zone = c4.selectbox("Zone", metrics["category_levels"]["zone"])
@@ -89,24 +74,14 @@ with tab1:
     zone_demand = c12.slider("Orders in zone over 3h", 1, 60, 12)
 
     c13, c14, c15 = st.columns(3)
-    order_category = c13.selectbox(
-        "Order category",
-        metrics["category_levels"]["order_category"],
-        index=metrics["category_levels"]["order_category"].index(default_level(metrics, "order_category")),
-    )
-    type_of_order = c14.selectbox(
-        "Order type",
-        metrics["category_levels"]["type_of_order"],
-        index=metrics["category_levels"]["type_of_order"].index(default_level(metrics, "type_of_order")),
-    )
-    vehicle_type = c15.selectbox(
-        "Vehicle type",
-        metrics["category_levels"]["vehicle_type"],
-        index=metrics["category_levels"]["vehicle_type"].index(default_level(metrics, "vehicle_type")),
-    )
+    order_category = c13.selectbox("Order category", metrics["category_levels"]["order_category"],
+                                   index=metrics["category_levels"]["order_category"].index(default_level(metrics, "order_category")))
+    type_of_order = c14.selectbox("Order type", metrics["category_levels"]["type_of_order"],
+                                  index=metrics["category_levels"]["type_of_order"].index(default_level(metrics, "type_of_order")))
+    vehicle_type = c15.selectbox("Vehicle type", metrics["category_levels"]["vehicle_type"],
+                                 index=metrics["category_levels"]["vehicle_type"].index(default_level(metrics, "vehicle_type")))
 
-    zone_default = min(300, max(10, int(metrics["defaults"]["zone_orders_that_day"])))
-    zone_orders_today = st.slider("Orders in zone today", 10, 300, zone_default)
+    zone_orders_today = st.slider("Orders in zone today", 10, 300, int(metrics["defaults"]["zone_orders_that_day"]))
 
     row = dict(metrics["defaults"])
     row.update(
@@ -141,14 +116,13 @@ with tab1:
     }.items():
         set_category(row, metrics, category, value)
 
-    x_input = pd.DataFrame([row]).reindex(columns=metrics["feature_cols"], fill_value=0)
+    x_input = pd.DataFrame([row])[metrics["feature_cols"]]
     prediction = float(model.predict(x_input)[0])
     threshold = metrics["sla_threshold_min"]
     st.metric(
         "Predicted Delivery ETA",
         f"{prediction:.1f} min",
         delta="High SLA risk" if prediction > threshold else "Within SLA",
-        delta_color="inverse" if prediction > threshold else "normal",
     )
 
 with tab2:
@@ -156,12 +130,7 @@ with tab2:
     winner_metrics = summary["metrics"]
     baseline = summary["baseline"]
     k1, k2, k3, k4 = st.columns(4)
-    k1.metric(
-        "LightGBM MAE (min)",
-        winner_metrics["mae_min"],
-        delta=f"{winner_metrics['mae_min'] - baseline['mae_min']:.2f} vs baseline",
-        delta_color="inverse",
-    )
+    k1.metric("LightGBM MAE (min)", winner_metrics["mae_min"], delta=f"{winner_metrics['mae_min'] - baseline['mae_min']:.2f} vs baseline", delta_color="inverse")
     k2.metric("R² Score", winner_metrics["r2"])
     k3.metric("SLA-call Accuracy", f"{winner_metrics['sla_accuracy'] * 100:.1f}%")
     k4.metric("Missed Late Orders", winner_metrics["missed_late_count"])
@@ -170,10 +139,10 @@ with tab2:
     st.bar_chart(pd.DataFrame(summary["top_shap_drivers"]).set_index("feature"))
 
     st.subheader("Zone SLA Breakdown")
-    show_table(pd.DataFrame(summary["zone_summary"]))
+    st.dataframe(pd.DataFrame(summary["zone_summary"]), use_container_width=True)
 
     st.subheader("Hour-band SHAP and SLA Summary")
-    show_table(pd.DataFrame(summary["hour_band_summary"]))
+    st.dataframe(pd.DataFrame(summary["hour_band_summary"]), use_container_width=True)
 
 with tab3:
     st.subheader("AI Operations Briefing")
