@@ -2,6 +2,8 @@
 
 An end-to-end delivery ETA project with chronological model training, LightGBM predictions, SHAP explanations, an executed analysis notebook, pytest coverage, and a Streamlit operations dashboard.
 
+[![Tests](https://github.com/Lifewitdata/delivery-eta-ops-copilot/actions/workflows/tests.yml/badge.svg)](https://github.com/Lifewitdata/delivery-eta-ops-copilot/actions/workflows/tests.yml)
+
 > **Data disclosure:** this is portfolio analysis based on a public 2022 delivery dataset. Saudi city names, coordinates, zones, and order categories are synthetic adaptations, not real platform order data.
 
 ## Results
@@ -150,10 +152,17 @@ The suite covers:
 
 Verified result: **13 passed**.
 
+## License
+
+Released under the MIT License. See [LICENSE](LICENSE).
+
 ## Project structure
 
 ```text
 delivery-eta-ops-copilot/
+├── .github/
+│   └── workflows/
+│       └── tests.yml
 ├── app/
 │   └── streamlit_app.py
 ├── data/
@@ -187,6 +196,7 @@ delivery-eta-ops-copilot/
 ├── requirements-dev.txt
 ├── pyproject.toml
 ├── .env.example
+├── LICENSE
 └── README.md
 ```
 
