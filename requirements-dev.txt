@@ -1,6 +1,7 @@
 -r requirements.txt
 
 scikit-learn>=1.4,<2
+lightgbm==3.3.5
 xgboost>=2.0,<4
 shap>=0.46,<1
 matplotlib>=3.8,<4

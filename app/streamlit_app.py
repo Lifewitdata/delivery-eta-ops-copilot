@@ -3,11 +3,11 @@
 import json
 from pathlib import Path
 
-import lightgbm as lgb
 import pandas as pd
 import streamlit as st
 
 from src.ai_copilot import generate_ops_brief
+from src.portable_model import PortableLightGBM
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -15,10 +15,10 @@ MODELS_DIR = ROOT / "models"
 
 
 @st.cache_resource
-def load_artifacts() -> tuple[dict, dict, lgb.Booster]:
+def load_artifacts() -> tuple[dict, dict, PortableLightGBM]:
     metrics = json.loads((MODELS_DIR / "metrics.json").read_text(encoding="utf-8"))
     summary = json.loads((MODELS_DIR / "shap_summary.json").read_text(encoding="utf-8"))
-    model = lgb.Booster(model_file=str(MODELS_DIR / metrics["model_files"]["lightgbm"]))
+    model = PortableLightGBM(MODELS_DIR / metrics["model_files"]["lightgbm_portable"])
     return metrics, summary, model
 
 

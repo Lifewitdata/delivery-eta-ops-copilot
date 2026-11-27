@@ -10,6 +10,7 @@ import xgboost as xgb
 from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score
 
 from src.features import CATEGORICAL_FEATURES, NUMERIC_FEATURES, TARGET_COL, engineer_features, make_model_features
+from src.portable_model import export_booster
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -112,6 +113,7 @@ def train_models(df: pd.DataFrame, root: Path = ROOT) -> tuple[dict, pd.DataFram
     processed_dir.mkdir(parents=True, exist_ok=True)
     xgb_model.save_model(models_dir / "eta_xgb_model.json")
     lgb_model.booster_.save_model(str(models_dir / "eta_lgbm_model.txt"))
+    export_booster(lgb_model.booster_, models_dir / "eta_lgbm_portable.json", feature_names=feature_cols)
 
     winner_pred = lgb_pred if winner == "lightgbm" else xgb_pred
     test_out = test_df.copy()
@@ -153,6 +155,7 @@ def train_models(df: pd.DataFrame, root: Path = ROOT) -> tuple[dict, pd.DataFram
         "model_files": {
             "xgboost": "eta_xgb_model.json",
             "lightgbm": "eta_lgbm_model.txt",
+            "lightgbm_portable": "eta_lgbm_portable.json",
         },
     }
     (models_dir / "metrics.json").write_text(json.dumps(metrics, indent=2), encoding="utf-8")

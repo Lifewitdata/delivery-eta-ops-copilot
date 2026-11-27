@@ -14,7 +14,7 @@ An end-to-end delivery ETA project with chronological model training, LightGBM p
 
 The split is chronological: **25,153 training rows** before 2022-03-22 and **13,811 test rows** from 2022-03-23 through 2022-04-06. There are no orders dated 2022-03-22 in the source.
 
-At the assumed 30-minute SLA, LightGBM misses **496** late orders and raises **408** false alarms. The app loads `models/eta_lgbm_model.txt` for every prediction; XGBoost remains saved for comparison.
+At the assumed 30-minute SLA, LightGBM misses **496** late orders and raises **408** false alarms. The app runs the 450 exported trees in `models/eta_lgbm_portable.json` for every prediction, so the hosted dashboard does not need the native LightGBM package. The original `models/eta_lgbm_model.txt` is retained for training, SHAP, and parity tests; XGBoost remains saved for comparison.
 
 ![Model comparison](docs/images/model_comparison.png)
 
@@ -79,7 +79,7 @@ Use these settings when deploying this repository:
 - **Python version:** `3.11`
 - **Dependencies:** the root `requirements.txt` is detected automatically
 
-The root requirements file contains only dashboard runtime packages. Training, SHAP, notebook, and test packages are isolated in `requirements-dev.txt` so cloud installs stay smaller. If an existing deployment still shows an installation error, open **Advanced settings**, select Python **3.11**, save, and reboot the app.
+The root requirements file contains only dashboard runtime packages. The app uses dependency-free traversal of the exported LightGBM trees, avoiding native LightGBM installation failures on Streamlit Cloud. Training, native LightGBM, SHAP, notebook, and test packages are isolated in `requirements-dev.txt` so cloud installs stay smaller. After pushing these changes, reboot the app; if an old environment remains stuck, create a fresh deployment with Python **3.11** and `app/streamlit_app.py` as the main file.
 
 To enable Gemini in the deployment, add `GOOGLE_API_KEY` and optionally `GEMINI_MODEL` in the Streamlit **Secrets** settings. Do not commit the key or upload a local `.env` file.
 
@@ -141,12 +141,12 @@ The suite covers:
 - original CSV row count, size, and checksum;
 - feature engineering, Haversine distance, and hour bands;
 - chronological split and LightGBM winner selection;
-- saved model loading and prediction;
+- saved model loading, portable/native prediction parity, and missing-value handling;
 - SHAP zone/hour-band outputs and placeholder removal;
 - Gemini rewrite mocking and fallback behavior;
-- Streamlit app startup and LightGBM metric display.
+- Streamlit app startup with LightGBM imports blocked.
 
-Verified result: **12 passed**.
+Verified result: **13 passed**.
 
 ## Project structure
 
@@ -168,12 +168,14 @@ delivery-eta-ops-copilot/
 ├── models/
 │   ├── eta_xgb_model.json
 │   ├── eta_lgbm_model.txt
+│   ├── eta_lgbm_portable.json
 │   ├── metrics.json
 │   └── shap_summary.json
 ├── notebooks/
 │   └── 01_eda_and_sla_baseline.ipynb
 ├── src/
 │   ├── features.py
+│   ├── portable_model.py
 │   ├── train_model.py
 │   ├── explainability.py
 │   └── ai_copilot.py

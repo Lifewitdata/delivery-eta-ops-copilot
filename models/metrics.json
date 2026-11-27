@@ -239,6 +239,7 @@
   },
   "model_files": {
     "xgboost": "eta_xgb_model.json",
-    "lightgbm": "eta_lgbm_model.txt"
+    "lightgbm": "eta_lgbm_model.txt",
+    "lightgbm_portable": "eta_lgbm_portable.json"
   }
 }
